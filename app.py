@@ -212,6 +212,10 @@ def start_following(follow_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    form = g.csrf_form
+    if form.validate_on_submit() == False:
+        raise Unauthorized()
+
     followed_user = User.query.get_or_404(follow_id)
     g.user.following.append(followed_user)
     db.session.commit()
@@ -229,6 +233,10 @@ def stop_following(follow_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+
+    form = g.csrf_form
+    if form.validate_on_submit() == False:
+        raise Unauthorized()
 
     followed_user = User.query.get_or_404(follow_id)
     g.user.following.remove(followed_user)
@@ -254,6 +262,10 @@ def delete_user():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+
+    form = g.csrf_form
+    if form.validate_on_submit() == False:
+        raise Unauthorized()
 
     do_logout()
 
@@ -312,6 +324,10 @@ def delete_message(message_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+
+    form = g.csrf_form
+    if form.validate_on_submit() == False:
+        raise Unauthorized()
 
     msg = Message.query.get_or_404(message_id)
     db.session.delete(msg)
