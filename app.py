@@ -266,6 +266,9 @@ def profile():
             db.session.commit()
             flash('User edit successful', 'success')
             return redirect(f'/users/{g.user.id}')
+        else:
+            flash('Password is not correct', 'danger')
+            return render_template('users/edit.html', form=form)
     else:
         return render_template('users/edit.html', form=form)
 
