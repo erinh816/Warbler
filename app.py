@@ -5,8 +5,10 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm
+from forms import UserAddForm, LoginForm, MessageForm, CSRFProtectForm
 from models import db, connect_db, User, Message
+
+from werkzeug.exceptions import Unauthorized
 
 load_dotenv()
 
@@ -37,6 +39,11 @@ def add_user_to_g():
     else:
         g.user = None
 
+@app.before_request
+def add_csrf_to_g():
+    """Add a csrf form to g"""
+    g.csrf_form=CSRFProtectForm()
+
 
 def do_login(user):
     """Log in user."""
@@ -62,8 +69,10 @@ def signup():
     If the there already is a user with that username: flash message
     and re-present form.
     """
+    if g.user:
+        return redirect(f'/users/{session[CURR_USER_KEY]}')
 
-    do_logout()
+    # do_logout()
 
     form = UserAddForm()
 
@@ -93,6 +102,9 @@ def signup():
 def login():
     """Handle user login and redirect to homepage on success."""
 
+    if g.user:
+        return redirect(f'/users/{session[CURR_USER_KEY]}')
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -119,6 +131,13 @@ def logout():
 
     # IMPLEMENT THIS AND FIX BUG
     # DO NOT CHANGE METHOD ON ROUTE
+    if form.validate_on_submit():
+        do_logout()
+        flash("Successful log out")
+        return redirect('/login')
+
+    else:
+        raise Unauthorized()
 
 
 ##############################################################################
