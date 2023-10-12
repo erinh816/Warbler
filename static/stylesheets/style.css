@@ -196,6 +196,17 @@ nav+.container {
   margin-left: 10px;
 }
 
+.message-link{
+  z-index: 1;
+
+}
+
+.message-area,
+.button {
+  z-index: 2;
+  position: relative;
+}
+
 #warbler-hero {
   height: 360px;
   margin-top: -16px;

@@ -23,6 +23,10 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
+# Having the Debug Toolbar show redirects explicitly is often useful;
+# however, if you want to turn it off, you can uncomment this line:
+
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 
 ##############################################################################
@@ -356,6 +360,31 @@ def delete_message(message_id):
     db.session.commit()
 
     return redirect(f"/users/{g.user.id}")
+
+@app.post('/messages/<int:message_id>/like')
+def like_message(message_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    form = g.csrf_form
+    
+    if form.validate_on_submit() == False:
+        raise Unauthorized()
+
+    msg = Message.query.get_or_404(message_id)
+
+    if msg in g.user.liked_messages:
+        g.user.liked_messages.remove(msg)
+    else:
+        g.user.liked_messages.append(msg)
+
+    db.session.commit()
+
+    go_back_to = request.form["from-url"]
+    return redirect(go_back_to)
+
+
 
 
 ##############################################################################

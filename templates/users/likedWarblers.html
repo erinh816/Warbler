@@ -18,9 +18,9 @@
           {{ message.timestamp.strftime('%d %B %Y') }}
         </span>
         <p>{{ message.text }}</p>
-        <form method="POST" action="/users/like/{{ msg.id }}">
+        <form method="POST" action="/users/like/{{ message.id }}">
           {{ g.csrf_form.hidden_tag() }}
-          <button id='like-icon' class="bi bi-star"></button>
+          <button id='like-icon' class="bi bi-star{% if g.user.is_liked(message.id) %}-fill{% endif %}"></button>
         </form>
       </div>
     </li>

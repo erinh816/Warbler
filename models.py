@@ -157,6 +157,16 @@ class User(db.Model):
             user for user in self.following if user == other_user]
         return len(found_user_list) == 1
 
+    def is_liked(self, message_id):
+        """Check if a message is liked by a user"""
+        liked = Like.query.filter(
+            Like.user_id == self.id,
+            Like.message_id == message_id
+        ).one_or_none()
+
+        return bool(liked)
+
+
 
 class Message(db.Model):
     """An individual message ("warble")."""
