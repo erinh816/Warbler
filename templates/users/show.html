@@ -20,10 +20,13 @@
               {{ message.timestamp.strftime('%d %B %Y') }}
             </span>
         <p>{{ message.text }}</p>
-        <form method="POST" action="/users/like/{{ message.id }}">
-          {{ g.csrf_form.hidden_tag() }}
-          <button id='like-icon' class="bi bi-star{% if g.user.is_liked(message.id) %}-fill{% endif %}"></button>
-        </form>
+        {% if g.user.id != message.user_id %}
+            <form method="POST" action="/messages/{{message.id}}/like" id='like-icon'>
+              {{ g.csrf_form.hidden_tag() }}
+              <input type="hidden" name="from-url" value="{{ request.url }}">
+              <button  class=" icon-blue bi bi-star{% if g.user.is_liked(message.id) %}-fill{% endif %} btn bg-transparent"></button>
+            </form>
+          {% endif %}
       </div>
     </li>
 

@@ -202,6 +202,17 @@ def show_followers(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('users/followers.html', user=user)
 
+@app.get('/users/<int:user_id>/likes')
+def show_likes(user_id):
+    """Show a list of messages that this user has liked"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/likedWarblers.html', user=user)
+
 
 @app.post('/users/follow/<int:follow_id>')
 def start_following(follow_id):
@@ -362,17 +373,29 @@ def delete_message(message_id):
     return redirect(f"/users/{g.user.id}")
 
 @app.post('/messages/<int:message_id>/like')
-def like_message(message_id):
+def toggle_like_message(message_id):
+    """Like a message.
+
+    Check that a user is logged and verify csfr then update db likes table
+    redirect to the last page the user was on
+    """
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
     form = g.csrf_form
-    
+
     if form.validate_on_submit() == False:
         raise Unauthorized()
 
     msg = Message.query.get_or_404(message_id)
+
+    go_back_to = request.form["from-url"]
+
+    if g.user.id == msg.user_id:
+        flash("Cannot like your own post","danger")
+        return redirect(go_back_to)
 
     if msg in g.user.liked_messages:
         g.user.liked_messages.remove(msg)
@@ -381,10 +404,7 @@ def like_message(message_id):
 
     db.session.commit()
 
-    go_back_to = request.form["from-url"]
     return redirect(go_back_to)
-
-
 
 
 ##############################################################################
