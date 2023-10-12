@@ -6,7 +6,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, CSRFProtectForm, UserEditForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Like
 
 from werkzeug.exceptions import Unauthorized
 
@@ -128,7 +128,6 @@ def logout():
     """Handle logout of user and redirect to homepage."""
 
     form = g.csrf_form
-
 
     if form.validate_on_submit() and g.user:
         do_logout()

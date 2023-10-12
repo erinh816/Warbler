@@ -89,6 +89,9 @@ class User(db.Model):
 
     messages = db.relationship('Message', backref="user")
 
+    liked_messages = db.relationship('Message',
+                         secondary='likes', backref='users')
+
     followers = db.relationship(
         "User",
         secondary="follows",
@@ -181,6 +184,27 @@ class Message(db.Model):
         db.ForeignKey('users.id', ondelete='CASCADE'),
         nullable=False,
     )
+
+
+
+
+class Like(db.Model):
+    '''An individual like'''
+
+    __tablename__ = 'likes'
+
+    message_id = db.Column(
+        db.Integer,
+        db.ForeignKey('messages.id', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete="cascade"),
+        primary_key=True,
+    )
+
 
 
 def connect_db(app):
