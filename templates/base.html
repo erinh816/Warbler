@@ -57,8 +57,8 @@
         </li>
         <li><a href="/messages/new">New Message</a></li>
         <form method="POST" action="/logout" id="logout_form">
-          {{ g.csrf_form.hidden_tag() }} <!--ASK why does form.hiddentag() not work here-->
-          <button>Logout</button><!--TODO:FIX CSS FOR LOGOUT BUTTON-->
+          {{ g.csrf_form.hidden_tag() }}
+          <button class = "btn btn-link"><b>Logout</b></button>
         </form>
       {% endif %}
 

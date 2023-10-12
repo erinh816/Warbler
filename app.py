@@ -129,11 +129,10 @@ def logout():
 
     form = g.csrf_form
 
-    # IMPLEMENT THIS AND FIX BUG
-    # DO NOT CHANGE METHOD ON ROUTE
-    if form.validate_on_submit():
+
+    if form.validate_on_submit() and g.user:
         do_logout()
-        flash("Successful log out")
+        flash("Successful log out", 'success')
         return redirect('/login')
 
     else:
@@ -252,28 +251,26 @@ def profile():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    # user = g.user
+
     form = UserEditForm(obj=g.user)
 
     if form.validate_on_submit():
         if User.authenticate(g.user.username, form.password.data):
             g.user.username = form.username.data
-            g.user.email = form.username.data
+            g.user.email = form.email.data
             g.user.image_url = form.image_url.data
             g.user.header_image_url = form.header_image_url.data
             g.user.bio = form.bio.data
 
             db.session.commit()
-            flash('User edit successful', 'success')
+
+            flash('User edit successful', 'success')##TODO:Choose a better spot for this message
+
             return redirect(f'/users/{g.user.id}')
         else:
             flash('Password is not correct', 'danger')
-            return render_template('users/edit.html', form=form)
-    else:
-        return render_template('users/edit.html', form=form)
 
-
-
+    return render_template('users/edit.html', form=form)
 
 
 
@@ -375,8 +372,10 @@ def homepage():
     """
 
     if g.user:
+        following_ids = [user.id for user in g.user.following]+[g.user.id]
         messages = (Message
                     .query
+                    .filter(Message.user_id.in_(following_ids))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
