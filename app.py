@@ -278,7 +278,7 @@ def profile():
 
             db.session.commit()
 
-            flash('User edit successful', 'success')##TODO:Choose a better spot for this message
+            flash('User edit successful', 'success')
 
             return redirect(f'/users/{g.user.id}')
         else:
@@ -305,8 +305,10 @@ def delete_user():
         raise Unauthorized()
 
     do_logout()
+    
+    User.query.filter_by(id=g.user.id).delete()
+    # db.session.delete(g.user) #This will not work, g.user has relationships. This will try to set foreign key as null and fail b/c nullable-False
 
-    db.session.delete(g.user)
     db.session.commit()
 
     return redirect("/signup")

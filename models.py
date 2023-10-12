@@ -35,7 +35,7 @@ class Follow(db.Model):
         primary_key=True,
     )
 
-
+##TODO:REferential integrity error when deleting
 class User(db.Model):
     """User in the system."""
 
@@ -159,6 +159,7 @@ class User(db.Model):
 
     def is_liked(self, message_id):
         """Check if a message is liked by a user"""
+
         liked = Like.query.filter(
             Like.user_id == self.id,
             Like.message_id == message_id
@@ -205,13 +206,13 @@ class Like(db.Model):
 
     message_id = db.Column(
         db.Integer,
-        db.ForeignKey('messages.id', ondelete="cascade"),
+        db.ForeignKey('messages.id', ondelete="CASCADE"),
         primary_key=True,
     )
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('users.id', ondelete="cascade"),
+        db.ForeignKey('users.id', ondelete="CASCADE"),
         primary_key=True,
     )
 
