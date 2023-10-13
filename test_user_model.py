@@ -109,3 +109,26 @@ class UserModelTestCase(TestCase):
 
         db.session.rollback()
         self.assertEqual(User.query.count(), 2)
+
+    def test_user_authenticate(self):
+        """Test successfull return when given valid username and password"""
+
+        user = User.authenticate("u1", "password")
+
+        self.assertIsInstance(user, User)
+        self.assertNotEqual("password", user.password)
+        self.assertEqual("u1", user.username)
+
+    def test_user_authenticate_bad_username(self):
+
+        user = User.authenticate("wrongusername", "password")
+
+        self.assertFalse(user)
+
+    def test_user_authenticate_bad_password(self):
+
+        user = User.authenticate("u1", "wrongpassword")
+
+        self.assertFalse(user)
+
+    

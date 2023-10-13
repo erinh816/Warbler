@@ -159,7 +159,7 @@ class User(db.Model):
 
     def is_liked(self, message_id):
         """Check if a message is liked by a user"""
-
+        
         liked = Like.query.filter(
             Like.user_id == self.id,
             Like.message_id == message_id

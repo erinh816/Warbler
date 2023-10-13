@@ -305,7 +305,7 @@ def delete_user():
         raise Unauthorized()
 
     do_logout()
-    
+
     User.query.filter_by(id=g.user.id).delete()
     # db.session.delete(g.user) #This will not work, g.user has relationships. This will try to set foreign key as null and fail b/c nullable-False
 
@@ -369,6 +369,10 @@ def delete_message(message_id):
         raise Unauthorized()
 
     msg = Message.query.get_or_404(message_id)
+
+    if g.user.id != msg.user_id:
+        raise Unauthorized()
+
     db.session.delete(msg)
     db.session.commit()
 
