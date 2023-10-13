@@ -55,11 +55,12 @@
           <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
           <p>{{ message.text }}</p>
           {% if g.user.id != message.user_id %}
-            <form method="POST" action="/messages/{{message.id}}/like" id='like-icon'>
-              {{ g.csrf_form.hidden_tag() }}
-              <input type="hidden" name="from-url" value="{{ request.url }}">
-              <button  class=" icon-blue bi bi-star{% if g.user.is_liked(message.id) %}-fill{% endif %} btn bg-transparent"></button>
-            </form>
+          <form method="POST" action="/messages/{{message.id}}/like" id='like-icon'>
+            {{ g.csrf_form.hidden_tag() }}
+            <input type="hidden" name="from-url" value="{{ request.url }}">
+            <button
+              class=" icon-blue bi bi-star{% if g.user.is_liked(message.id) %}-fill{% endif %} btn bg-transparent"></button>
+          </form>
           {% endif %}
         </div>
       </li>
@@ -68,4 +69,5 @@
   </div>
 
 </div>
+<!-- We're on the homepage(logged in) -->
 {% endblock %}
