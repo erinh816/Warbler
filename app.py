@@ -307,7 +307,7 @@ def delete_user():
     do_logout()
 
     User.query.filter_by(id=g.user.id).delete()
-    # db.session.delete(g.user) #This will not work, g.user has relationships. This will try to set foreign key as null and fail b/c nullable-False
+    
 
     db.session.commit()
 
