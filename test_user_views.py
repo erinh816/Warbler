@@ -109,3 +109,87 @@ class UserAddViewTestCase(UserBaseViewTestCase):
 
             self.assertIn("Invalid credentials.", html)
             self.assertIn("We are on login page", html)
+
+    def search_users(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get('/users?q=u')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("@u1", html)
+        self.assertIn("@u2", html)
+
+    def search_users_no_result(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get('/users?q=DoesNotExist')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Sorry, no users found", html)
+
+
+    def test_show_logged_in_users_profile(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get(f'/users/{self.u1_id}')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("In Show user detail page", html)
+        self.assertIn("Edit Profile", html)
+        self.assertIn("Delete Profile", html)
+
+    def test_show_any_user_profile(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get(f'/users/{self.u2_id}')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("In Show user detail page", html)
+        self.assertIn("@u2", html)
+
+    def test_show_following(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get(f'/users/{self.u1_id}/following')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("On following page", html)
+
+    def test_show_followers(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get(f'/users/{self.u1_id}/followers')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("On followers page", html)
+
+    def test_show_likes(self):
+        with app.test_client() as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+        resp = c.get(f'/users/{self.u1_id}/likes')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("On likes page", html)
+
+
